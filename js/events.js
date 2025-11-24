@@ -1,75 +1,27 @@
+let allEvents = [];
+let currentPage = 1;
+const EVENTS_PER_PAGE = 6; // 3x2 Grid
+
+document.addEventListener('DOMContentLoaded', () => {
+    loadEvents();
+    initOrganizeForm();
+});
+
+// 1. Load and Render Events with Pagination
 async function loadEvents() {
     const container = document.getElementById("events-container");
 
     try {
         const res = await fetch("data/events.json");
-
         if (!res.ok) throw new Error("Failed to load events");
 
-        const events = await res.json();
-        container.innerHTML = ""; // Clear loading message
+        allEvents = await res.json();
+        
+        // Setup Countdown for the nearest upcoming event
+        setupCountdown(allEvents);
 
-        events.forEach(event => {
-            const card = document.createElement("div");
-            card.classList.add("event-card");
-
-            card.innerHTML = `
-                <h2>${event.title}</h2>
-                <p class="event-date"><i class="fa-solid fa-calendar"></i> ${event.date}</p>
-                <p class="event-location"><i class="fa-solid fa-location-dot"></i> ${event.location}</p>
-                <p class="event-description">${event.description}</p>
-                <a href="${event.link}" class="btn-event">Learn More</a>
-            `;
-
-            container.appendChild(card);
-        });
-
-    } catch (error) {
-        container.innerHTML = `<p class="error-msg">Unable to load events 😢</p>`;
-    }
-}
-
-loadEvents();
-
-async function loadEvents() {
-    const container = document.getElementById("events-container");
-
-    try {
-        const res = await fetch("data/events.json"); // Uses existing data file
-        if (!res.ok) throw new Error("Failed to load events");
-
-        const events = await res.json();
-        container.innerHTML = ""; 
-
-        // 1. Find the next upcoming event for the Countdown
-        const now = new Date();
-        // Filter for future events and sort by date (nearest first)
-        const upcomingEvents = events
-            .filter(e => new Date(e.date) > now)
-            .sort((a, b) => new Date(a.date) - new Date(b.date));
-
-        if (upcomingEvents.length > 0) {
-            initCountdown(upcomingEvents[0]);
-        }
-
-        // 2. Render Event Cards (Existing Logic)
-        events.forEach(event => {
-            const card = document.createElement("div");
-            card.classList.add("event-card");
-            // Highlight the card if it's the next featured event
-            const isNext = upcomingEvents.length > 0 && event === upcomingEvents[0];
-            if (isNext) card.style.borderColor = "var(--accent-color)";
-
-            card.innerHTML = `
-                ${isNext ? '<div style="color:var(--accent-color); font-weight:bold; font-size:0.8rem; margin-bottom:5px;">🔥 UP NEXT</div>' : ''}
-                <h2>${event.title}</h2>
-                <p class="event-date"><i class="fa-solid fa-calendar"></i> ${event.date}</p>
-                <p class="event-location"><i class="fa-solid fa-location-dot"></i> ${event.location}</p>
-                <p class="event-description">${event.description}</p>
-                <a href="${event.link}" class="btn-event">Learn More</a>
-            `;
-            container.appendChild(card);
-        });
+        // Initial Render
+        renderPage(1);
 
     } catch (error) {
         console.error(error);
@@ -77,9 +29,94 @@ async function loadEvents() {
     }
 }
 
-function initCountdown(event) {
+function renderPage(page) {
+    const container = document.getElementById("events-container");
+    container.innerHTML = "";
+    
+    // Calculate slice
+    const start = (page - 1) * EVENTS_PER_PAGE;
+    const end = start + EVENTS_PER_PAGE;
+    const eventsToShow = allEvents.slice(start, end);
+
+    if(eventsToShow.length === 0) {
+        container.innerHTML = "<p>No events to show.</p>";
+        return;
+    }
+
+    // Determine upcoming event for highlighting (if on page 1)
+    const now = new Date();
+    const upcoming = allEvents
+        .filter(e => new Date(e.date) > now)
+        .sort((a, b) => new Date(a.date) - new Date(b.date))[0];
+
+    // Create Cards
+    eventsToShow.forEach(event => {
+        const card = document.createElement("div");
+        card.classList.add("event-card");
+        
+        // Highlight logic
+        const isNext = upcoming && event === upcoming;
+        if (isNext) card.style.borderColor = "var(--accent-color)";
+
+        card.innerHTML = `
+            ${isNext ? '<div style="color:var(--accent-color); font-weight:bold; font-size:0.8rem; margin-bottom:5px;">🔥 UP NEXT</div>' : ''}
+            <h2>${event.title}</h2>
+            <p class="event-date"><i class="fa-solid fa-calendar"></i> ${event.date}</p>
+            <p class="event-location"><i class="fa-solid fa-location-dot"></i> ${event.location}</p>
+            <p class="event-description">${event.description}</p>
+            <a href="${event.link}" class="btn-event">Learn More</a>
+        `;
+        container.appendChild(card);
+    });
+
+    renderPaginationControls(page);
+}
+
+function renderPaginationControls(page) {
+    const container = document.getElementById('pagination-controls');
+    const totalPages = Math.ceil(allEvents.length / EVENTS_PER_PAGE);
+
+    // Only show controls if more than 1 page
+    if (totalPages <= 1) {
+        container.innerHTML = '';
+        return;
+    }
+
+    container.innerHTML = `
+        <button class="pagination-btn" ${page === 1 ? 'disabled' : ''} onclick="changePage(${page - 1})">
+            <i class="fas fa-chevron-left"></i> Prev
+        </button>
+        <span class="page-info">Page ${page} of ${totalPages}</span>
+        <button class="pagination-btn" ${page === totalPages ? 'disabled' : ''} onclick="changePage(${page + 1})">
+            Next <i class="fas fa-chevron-right"></i>
+        </button>
+    `;
+}
+
+window.changePage = function(newPage) {
+    currentPage = newPage;
+    renderPage(newPage);
+    // Smooth scroll to top of events section
+    document.querySelector('.events-container').scrollIntoView({ behavior: 'smooth' });
+};
+
+// 2. Countdown Logic (Kept from previous update)
+function setupCountdown(events) {
+    const now = new Date();
+    const upcomingEvents = events
+        .filter(e => new Date(e.date) > now)
+        .sort((a, b) => new Date(a.date) - new Date(b.date));
+
+    if (upcomingEvents.length > 0) {
+        initCountdownTimer(upcomingEvents[0]);
+    }
+}
+
+function initCountdownTimer(event) {
     const section = document.getElementById('countdown-section');
     const nameEl = document.getElementById('next-event-name');
+    if(!section || !nameEl) return;
+
     const targetDate = new Date(event.date).getTime();
 
     section.classList.remove('countdown-hidden');
@@ -106,7 +143,34 @@ function initCountdown(event) {
     };
 
     setInterval(updateTimer, 1000);
-    updateTimer(); // Run immediately
+    updateTimer();
 }
 
-loadEvents();
+// 3. Organize Form Logic
+function initOrganizeForm() {
+    const form = document.getElementById('organize-form');
+    const feedback = document.getElementById('organize-feedback');
+    
+    if(form) {
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const btn = form.querySelector('button');
+            const originalText = btn.innerText;
+
+            btn.disabled = true;
+            btn.innerText = "Submitting...";
+
+            // Simulate API Call
+            setTimeout(() => {
+                btn.disabled = false;
+                btn.innerText = originalText;
+                
+                feedback.textContent = "✅ Proposal submitted successfully! We'll review it soon.";
+                feedback.style.color = "#00c853";
+                form.reset();
+
+                setTimeout(() => { feedback.textContent = ""; }, 5000);
+            }, 1500);
+        });
+    }
+}

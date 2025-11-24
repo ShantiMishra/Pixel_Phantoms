@@ -1,4 +1,4 @@
-/* EVENTS PAGE */
+/* EVENTS PAGE STYLES */
 
 .events-hero {
     padding: 80px 20px;
@@ -6,65 +6,242 @@
     background: var(--bg-primary);
 }
 
+/* 3x2 GRID LAYOUT */
 .events-container {
     display: grid;
-    gap: 2rem;
-    padding: 2rem;
-    max-width: 1100px;
-    margin: auto;
+    /* Force 3 columns on desktop */
+    grid-template-columns: repeat(3, 1fr); 
+    gap: 30px;
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    min-height: 400px; /* Prevent layout shift when loading */
+}
+
+/* Responsive Grid */
+@media (max-width: 992px) {
+    .events-container {
+        grid-template-columns: repeat(2, 1fr); /* 2 columns on tablets */
+    }
+}
+
+@media (max-width: 600px) {
+    .events-container {
+        grid-template-columns: 1fr; /* 1 column on mobile */
+    }
 }
 
 .event-card {
     background: var(--card-bg);
-    padding: 1.8rem;
-    border-radius: 12px;
+    padding: 25px;
+    border-radius: 16px;
     box-shadow: var(--shadow);
     border: 1px solid var(--border-color);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
 }
 
 .event-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    transform: translateY(-8px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.15);
     border-color: var(--accent-color);
 }
 
 .event-card h2 {
-    margin-bottom: 0.5rem;
+    margin: 0 0 10px 0;
     color: var(--text-primary);
+    font-size: 1.4rem;
 }
 
 .event-date,
 .event-location {
     color: var(--text-secondary);
-    margin: 0.3rem 0;
-    font-size: 0.9rem;
+    margin: 5px 0;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.event-date i, .event-location i {
+    color: var(--accent-color);
+    width: 20px;
+    text-align: center;
 }
 
 .event-description {
-    margin-top: 1rem;
-    color: var(--text-primary);
+    margin-top: 15px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    flex-grow: 1; /* Pushes button to bottom */
 }
 
 .btn-event {
     display: inline-block;
-    margin-top: 1rem;
-    padding: 0.7rem 1.2rem;
-    background: var(--accent-color);
-    color: white;
+    margin-top: 20px;
+    padding: 10px 20px;
+    background: transparent;
+    border: 1px solid var(--accent-color);
+    color: var(--accent-color);
     border-radius: 8px;
     text-decoration: none;
-    font-weight: bold;
+    font-weight: 600;
+    text-align: center;
+    transition: all 0.3s;
 }
 
 .btn-event:hover {
-    background: #0088cc;
-}
-/* COUNTDOWN SECTION */
-.countdown-hidden {
-    display: none;
+    background: var(--accent-color);
+    color: white;
 }
 
+/* PAGINATION CONTROLS */
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 40px auto;
+    gap: 15px;
+}
+
+.pagination-btn {
+    background: var(--card-bg);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    padding: 10px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s;
+    font-weight: 600;
+}
+
+.pagination-btn:hover:not(:disabled) {
+    background: var(--accent-color);
+    color: white;
+    border-color: var(--accent-color);
+}
+
+.pagination-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.page-info {
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+/* ORGANIZE FORM SECTION */
+.organize-section {
+    padding: 80px 20px;
+    background: linear-gradient(180deg, var(--bg-primary) 0%, var(--card-bg) 100%);
+    border-top: 1px solid var(--border-color);
+}
+
+.organize-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    background: var(--card-bg); /* Opaque background */
+    border-radius: 20px;
+    border: 1px solid var(--border-color);
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+}
+
+.organize-content {
+    padding: 40px;
+}
+
+.organize-content h2 {
+    margin-top: 0;
+    font-size: 2rem;
+    color: var(--text-primary);
+}
+
+.organize-content p {
+    color: var(--text-secondary);
+    margin-bottom: 25px;
+}
+
+.organize-image {
+    background: linear-gradient(135deg, var(--accent-color), #0088cc);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 8rem;
+    opacity: 0.9;
+}
+
+/* Form Styles */
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.input-group {
+    margin-bottom: 20px;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.input-group input,
+.input-group select,
+.input-group textarea {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: inherit;
+    box-sizing: border-box;
+}
+
+.input-group input:focus,
+.input-group select:focus,
+.input-group textarea:focus {
+    outline: none;
+    border-color: var(--accent-color);
+}
+
+.btn-organize {
+    width: 100%;
+    padding: 14px;
+    background: var(--accent-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-organize:hover {
+    background: #0088cc;
+}
+
+.feedback-message {
+    margin-top: 15px;
+    font-weight: 600;
+    text-align: center;
+}
+
+/* Countdown Styles (from previous step, kept for completeness) */
+.countdown-hidden { display: none; }
 #countdown-section {
     margin-top: 40px;
     padding: 30px;
@@ -73,76 +250,17 @@
     border: 1px solid var(--border-color);
     backdrop-filter: blur(10px);
     display: inline-block;
-    animation: fadeIn 1s ease-out;
 }
+#countdown-section h3 { margin: 0 0 20px 0; color: var(--text-secondary); font-size: 1.1rem; text-transform: uppercase; letter-spacing: 2px; }
+#countdown-timer { display: flex; justify-content: center; gap: 30px; margin-bottom: 20px; }
+.time-unit { display: flex; flex-direction: column; align-items: center; position: relative; }
+.time-unit span { font-size: 3rem; font-weight: 800; color: var(--accent-color); line-height: 1; }
+.time-unit label { font-size: 0.9rem; color: var(--text-primary); margin-top: 10px; font-weight: 600; }
+.time-unit:not(:last-child)::after { content: ':'; position: absolute; right: -20px; top: 5px; font-size: 2rem; color: var(--text-secondary); opacity: 0.5; }
 
-#countdown-section h3 {
-    margin: 0 0 20px 0;
-    color: var(--text-secondary);
-    font-size: 1.1rem;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-}
-
-#countdown-timer {
-    display: flex;
-    justify-content: center;
-    gap: 30px;
-    margin-bottom: 20px;
-}
-
-.time-unit {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    position: relative;
-}
-
-.time-unit span {
-    font-size: 3rem;
-    font-weight: 800;
-    color: var(--accent-color);
-    line-height: 1;
-    text-shadow: 0 0 20px rgba(0, 170, 255, 0.4);
-    font-variant-numeric: tabular-nums;
-}
-
-.time-unit label {
-    font-size: 0.9rem;
-    color: var(--text-primary);
-    margin-top: 10px;
-    font-weight: 600;
-}
-
-/* Add colons between units on desktop */
-.time-unit:not(:last-child)::after {
-    content: ':';
-    position: absolute;
-    right: -20px;
-    top: 5px;
-    font-size: 2rem;
-    color: var(--text-secondary);
-    opacity: 0.5;
-}
-
-.highlight-event {
-    color: var(--text-primary);
-    font-size: 1.2rem;
-    margin: 0;
-    font-weight: bold;
-}
-
-/* Responsive adjustments */
-@media (max-width: 600px) {
-    #countdown-timer {
-        gap: 15px;
-    }
-    
-    .time-unit span {
-        font-size: 2rem;
-    }
-    
-    .time-unit:not(:last-child)::after {
-        display: none;
-    }
+/* Mobile Response for Form */
+@media (max-width: 768px) {
+    .organize-container { grid-template-columns: 1fr; }
+    .organize-image { display: none; }
+    .form-row { grid-template-columns: 1fr; }
 }
