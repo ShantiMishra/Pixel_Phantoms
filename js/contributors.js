@@ -8,7 +8,7 @@ let contributorsData = [];
 let currentPage = 1;
 const itemsPerPage = 8;
 
-// Point System Weights (Strict PR Logic)
+// Point System Weights
 const POINTS = {
     L3: 11,
     L2: 5,
@@ -16,70 +16,87 @@ const POINTS = {
     DEFAULT: 1
 };
 
-// Initialize on Load
+// Initialize
 document.addEventListener('DOMContentLoaded', () => {
     initData();
     fetchRecentActivity();
-    setupModalEvents(); // [FIX] Initialize modal listeners safely
+    setupModalEvents(); 
 });
 
 // 1. Master Initialization Function
 async function initData() {
     try {
-        // Fetch Repo Info, Contributors, and Total Commits
+        // Fetch Repo Info, Contributors, and Total Commits in parallel
         const [repoRes, contributorsRes, totalCommits] = await Promise.all([
             fetch(API_BASE),
             fetch(`${API_BASE}/contributors?per_page=100`),
             fetchTotalCommits()
         ]);
 
+        // Handle Rate Limit (403) or other errors
+        if (repoRes.status === 403 || contributorsRes.status === 403) {
+            throw new Error("API Rate Limit Exceeded. Please try again in an hour.");
+        }
+        if (!repoRes.ok || !contributorsRes.ok) {
+            throw new Error("Failed to fetch repository data.");
+        }
+
         const repoData = await repoRes.json();
         const rawContributors = await contributorsRes.json();
         
-        // Fetch Pull Requests (Recursive) to capture history
+        // Fetch Pull Requests to calculate scores
         const rawPulls = await fetchAllPulls();
 
         processData(repoData, rawContributors, rawPulls, totalCommits);
 
     } catch (error) {
-        console.error('Error initializing data:', error);
-        document.getElementById('contributors-grid').innerHTML = '<p>Failed to load data.</p>';
+        console.error('Error:', error);
+        document.getElementById('contributors-grid').innerHTML = `
+            <div style="grid-column: 1/-1; text-align: center; padding: 20px;">
+                <h3 style="color: #ff4444;">⚠️ Unable to Load Data</h3>
+                <p>${error.message}</p>
+            </div>`;
     }
 }
 
-// Helper: Fetch Total Commits using Link Header Strategy
+// Helper: Fetch Total Commits using Link Header (Efficient)
 async function fetchTotalCommits() {
     try {
         const res = await fetch(`${API_BASE}/commits?per_page=1`);
+        if (!res.ok) return "N/A";
+
         const linkHeader = res.headers.get('Link');
+        // If pagination exists, the last page number = total commits
         if (linkHeader) {
             const match = linkHeader.match(/[?&]page=(\d+)[^>]*>; rel="last"/);
             if (match) return match[1];
         }
+        // If less than 30 commits (no pagination), count the array
         const data = await res.json();
         return data.length;
     } catch (e) {
-        return "50+"; 
+        return "N/A";
     }
 }
 
-// Helper: Fetch up to 300 PRs
+// Helper: Fetch All Pull Requests (up to 3 pages/300 items)
 async function fetchAllPulls() {
     let pulls = [];
     let page = 1;
-    while (page <= 3) {
-        try {
+    try {
+        while (page <= 3) {
             const res = await fetch(`${API_BASE}/pulls?state=all&per_page=100&page=${page}`);
+            if (!res.ok) break;
             const data = await res.json();
             if (!data.length) break;
             pulls = pulls.concat(data);
             page++;
-        } catch (e) { break; }
-    }
+        }
+    } catch (e) { console.warn("PR fetch error", e); }
     return pulls;
 }
 
-// 2. Process & Merge Data
+// 2. Process Data & Calculate Scores
 function processData(repoData, contributors, pulls, totalCommits) {
     const leadAvatar = document.getElementById('lead-avatar');
     const statsMap = {};
@@ -87,6 +104,7 @@ function processData(repoData, contributors, pulls, totalCommits) {
     let totalProjectPRs = 0;
     let totalProjectPoints = 0;
 
+    // Calculate points based on merged PRs
     pulls.forEach(pr => {
         if (!pr.merged_at) return; 
 
@@ -102,14 +120,11 @@ function processData(repoData, contributors, pulls, totalCommits) {
         pr.labels.forEach(label => {
             const name = label.name.toLowerCase();
             if (name.includes('level 3') || name.includes('level-3')) {
-                prPoints += POINTS.L3;
-                hasLevel = true;
+                prPoints += POINTS.L3; hasLevel = true;
             } else if (name.includes('level 2') || name.includes('level-2')) {
-                prPoints += POINTS.L2;
-                hasLevel = true;
+                prPoints += POINTS.L2; hasLevel = true;
             } else if (name.includes('level 1') || name.includes('level-1')) {
-                prPoints += POINTS.L1;
-                hasLevel = true;
+                prPoints += POINTS.L1; hasLevel = true;
             }
         });
 
@@ -119,28 +134,31 @@ function processData(repoData, contributors, pulls, totalCommits) {
         totalProjectPoints += prPoints;
     });
 
+    // Merge points with contributor profile
     contributorsData = contributors.map(c => {
         const login = c.login;
         const userStats = statsMap[login] || { prs: 0, points: 0 };
-        const totalScore = userStats.points;
-
-        if (login.toLowerCase() === REPO_OWNER.toLowerCase()) {
-            if (leadAvatar) leadAvatar.src = c.avatar_url;
+        
+        // Set Lead Avatar if found
+        if (login.toLowerCase() === REPO_OWNER.toLowerCase() && leadAvatar) {
+            leadAvatar.src = c.avatar_url;
         }
 
         return {
             ...c,
             prs: userStats.prs,
-            points: totalScore 
+            points: userStats.points 
         };
     });
 
+    // Filter out the owner and anyone with 0 PRs
     contributorsData = contributorsData
         .filter(c => c.login.toLowerCase() !== REPO_OWNER.toLowerCase() && c.prs > 0)
         .sort((a, b) => b.points - a.points); 
 
+    // Update Stats Board
     updateGlobalStats(
-        contributorsData.length, 
+        contributorsData.length, // Shows only active contributors
         totalProjectPRs, 
         totalProjectPoints, 
         repoData.stargazers_count, 
@@ -152,15 +170,19 @@ function processData(repoData, contributors, pulls, totalCommits) {
 }
 
 function updateGlobalStats(count, prs, points, stars, forks, commits) {
-    document.getElementById('total-contributors').textContent = count;
-    document.getElementById('total-prs').textContent = prs;
-    document.getElementById('total-points').textContent = points;
-    document.getElementById('total-stars').textContent = stars;
-    document.getElementById('total-forks').textContent = forks;
-    document.getElementById('total-commits').textContent = commits; 
+    const set = (id, val) => {
+        const el = document.getElementById(id);
+        if(el) el.textContent = val;
+    };
+    set('total-contributors', count);
+    set('total-prs', prs);
+    set('total-points', points);
+    set('total-stars', stars);
+    set('total-forks', forks);
+    set('total-commits', commits); 
 }
 
-// 3. Get League/Badge Data
+// 3. Define Leagues
 function getLeagueData(points) {
     if (points > 150) {
         return { text: 'Gold 🏆', class: 'badge-gold', tier: 'tier-gold', label: 'Gold League' };
@@ -176,6 +198,7 @@ function getLeagueData(points) {
 // 4. Render Grid
 function renderContributors(page) {
     const grid = document.getElementById('contributors-grid');
+    if (!grid) return;
     grid.innerHTML = '';
 
     const start = (page - 1) * itemsPerPage;
@@ -183,7 +206,7 @@ function renderContributors(page) {
     const paginatedItems = contributorsData.slice(start, end);
 
     if (paginatedItems.length === 0) {
-        grid.innerHTML = '<p>No active contributors found (Must have at least 1 Merged PR).</p>';
+        grid.innerHTML = '<p>No active contributors found yet.</p>';
         return;
     }
 
@@ -234,31 +257,26 @@ window.changePage = function(newPage) {
     renderContributors(newPage);
 };
 
-// 5. Modal Logic & Event Listeners
+// 5. Modal Logic
 function setupModalEvents() {
     const modal = document.getElementById('contributor-modal');
     const closeBtn = document.querySelector('.close-modal');
 
-    // [FIX] Close on Cross Button Click
     if (closeBtn) {
         closeBtn.addEventListener('click', (e) => {
-            e.stopPropagation(); // Prevent bubble up
+            e.stopPropagation();
             closeModal();
         });
     }
 
-    // [FIX] Close on Outside Click (Overlay)
     if (modal) {
         modal.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                closeModal();
-            }
+            if (e.target === modal) closeModal();
         });
     }
 
-    // [FIX] Close on Escape Key
     document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && modal.classList.contains('active')) {
+        if (e.key === 'Escape' && modal && modal.classList.contains('active')) {
             closeModal();
         }
     });
@@ -282,14 +300,13 @@ function openModal(contributor, league, rank) {
     document.getElementById('modal-pr-link').href = prLink;
     document.getElementById('modal-profile-link').href = contributor.html_url;
 
-    // Reset & Add League Class for Dynamic Coloring
+    // Apply League Theme
     modalContainer.className = 'modal-container'; 
     modalContainer.classList.add(league.tier);
 
     modal.classList.add('active');
 }
 
-// Global close function for inline usage compatibility
 window.closeModal = function() {
     const modal = document.getElementById('contributor-modal');
     if(modal) modal.classList.remove('active');
@@ -299,6 +316,8 @@ window.closeModal = function() {
 async function fetchRecentActivity() {
     try {
         const response = await fetch(`${API_BASE}/commits?per_page=10`);
+        if (!response.ok) return; // Silent fail if API limit reached
+        
         const commits = await response.json();
         const activityList = document.getElementById('activity-list');
         
@@ -306,15 +325,12 @@ async function fetchRecentActivity() {
             activityList.innerHTML = '';
             commits.forEach(item => {
                 const date = new Date(item.commit.author.date).toLocaleDateString();
-                const message = item.commit.message;
-                const author = item.commit.author.name;
-
                 const row = document.createElement('div');
                 row.className = 'activity-item';
                 row.innerHTML = `
                     <div class="activity-marker"></div>
                     <div class="commit-msg">
-                        <span style="color: var(--accent-color)">${author}</span>: ${message}
+                        <span style="color: var(--accent-color)">${item.commit.author.name}</span>: ${item.commit.message}
                     </div>
                     <div class="commit-date">${date}</div>
                 `;
@@ -322,6 +338,7 @@ async function fetchRecentActivity() {
             });
         }
     } catch (error) {
-        console.error('Error fetching activity:', error);
+        // Just log, don't break UI
+        console.log('Activity feed unavailable'); 
     }
 }
