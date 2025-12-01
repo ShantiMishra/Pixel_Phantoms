@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pixel Phantoms | Global Command Rankings</title>
+    <title>Pixel Phantoms | Global Command Center</title>
     
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/home-gsap.css">
@@ -11,133 +11,151 @@
     
     <link rel="stylesheet" href="../css/leaderboard.css">
     
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body class="hacker-theme hud-mode">
 
-    <div id="cursor-highlight"></div>
     <div id="navbar-placeholder"></div>
 
-    <div class="dashboard-wrapper">
+    <div class="dashboard-container">
         
-        <header class="hud-header">
-            <div class="hud-title">
-                <h1 class="glitch" data-text="GLOBAL_RANKING_SYSTEM">GLOBAL_RANKING_SYSTEM</h1>
-                <div class="hud-subtitle">> ACCESSING CENTRAL DATABASE... [SECURE]</div>
-            </div>
-            <div class="hud-status">
-                <div class="status-item">
-                    <span class="label">SERVER</span>
-                    <span class="value success">ONLINE</span>
-                </div>
-                <div class="status-item">
-                    <span class="label">PING</span>
-                    <span class="value" id="ping-val">24ms</span>
-                </div>
-            </div>
-        </header>
+        <aside class="hud-sidebar">
+            <div class="sidebar-icon active"><i class="fas fa-chart-pie"></i></div>
+            <div class="sidebar-icon"><i class="fas fa-users"></i></div>
+            <div class="sidebar-icon"><i class="fas fa-cube"></i></div>
+            <div class="sidebar-icon"><i class="fas fa-cog"></i></div>
+        </aside>
 
-        <main class="bento-grid">
+        <main class="hud-main">
             
-            <div class="bento-card kpi-card">
-                <div class="kpi-icon"><i class="fas fa-users"></i></div>
-                <div class="kpi-data">
-                    <h3>Active Agents</h3>
-                    <p class="counter" id="total-agents">0</p>
+            <header class="hud-top-bar">
+                <div class="header-title">
+                    <h1 class="glitch-text" data-text="LEADERBOARD_MATRIX">LEADERBOARD_MATRIX</h1>
+                    <span class="sub-text">:: SYSTEM_OVERRIDE // V.2.0.4 ::</span>
                 </div>
-                <div class="kpi-graph-mini" id="mini-graph-1"></div>
-            </div>
-
-            <div class="bento-card kpi-card">
-                <div class="kpi-icon"><i class="fas fa-code-branch"></i></div>
-                <div class="kpi-data">
-                    <h3>Total Merges</h3>
-                    <p class="counter" id="total-merges">0</p>
-                </div>
-                <div class="kpi-graph-mini" id="mini-graph-2"></div>
-            </div>
-
-            <div class="bento-card kpi-card">
-                <div class="kpi-icon"><i class="fas fa-gem"></i></div>
-                <div class="kpi-data">
-                    <h3>Global XP</h3>
-                    <p class="counter" id="global-xp">0</p>
-                </div>
-                <div class="kpi-graph-mini" id="mini-graph-3"></div>
-            </div>
-
-            <div class="bento-card kpi-card">
-                <div class="kpi-icon"><i class="fas fa-clock"></i></div>
-                <div class="kpi-data">
-                    <h3>Cycle Time</h3>
-                    <p class="counter">S:24</p>
-                </div>
-                <div class="kpi-graph-mini"></div>
-            </div>
-
-            <div class="bento-card main-chart-panel">
-                <div class="panel-header">
-                    <i class="fas fa-chart-area"></i> CONTRIBUTION_VELOCITY
-                    <div class="panel-controls">
-                        <span class="active">WEEK</span>
-                        <span>MONTH</span>
+                <div class="header-stats">
+                    <div class="stat-pill">
+                        <span class="label">PING</span>
+                        <span class="val green" id="ping-counter">12ms</span>
+                    </div>
+                    <div class="stat-pill">
+                        <span class="label">UPTIME</span>
+                        <span class="val blue">99.9%</span>
                     </div>
                 </div>
-                <div class="chart-container" id="velocity-chart">
-                    </div>
-            </div>
+            </header>
 
-            <div class="bento-card podium-panel">
-                <div class="panel-header"><i class="fas fa-trophy"></i> ELITE_SQUAD</div>
-                <div class="podium-stage" id="podium-container">
-                    <div class="loader-text">Scanning Top Agents...</div>
+            <div class="bento-grid">
+
+                <div class="bento-item stage-3d-panel">
+                    <div class="panel-label">ARTIFACT_CONTROLLER</div>
+                    <div class="scene-3d">
+                        <div class="cube-wrapper" id="cube">
+                            <div class="face front"><div></div></div>
+                            <div class="face back"><div></div></div>
+                            <div class="face right"><div></div></div>
+                            <div class="face left"><div></div></div>
+                            <div class="face top"><div></div></div>
+                            <div class="face bottom"><div></div></div>
+                            <div class="inner-core"></div>
+                        </div>
+                        <div class="floor"></div>
+                    </div>
+                    <div class="control-text">
+                        <i class="fas fa-mouse-pointer"></i> HOVER TO ROTATE ARTIFACT
+                    </div>
                 </div>
-            </div>
 
-            <div class="bento-card table-panel">
-                <div class="panel-header">
-                    <div class="ph-left"><i class="fas fa-list"></i> AGENT_ROSTER</div>
-                    <div class="ph-right">
-                        <input type="text" id="search-agent" placeholder="SEARCH_ID...">
+                <div class="bento-item physics-panel">
+                    <div class="panel-label">GAMIFIED_PHYSICS_ENGINE</div>
+                    <div class="physics-grid">
+                        <div class="physics-stat">
+                            <h4><i class="fas fa-tachometer-alt"></i> Velocity (V)</h4>
+                            <p>Commit Frequency / Time</p>
+                            <div class="bar-container"><div class="bar-fill" style="width: 85%"></div></div>
+                        </div>
+                        <div class="physics-stat">
+                            <h4><i class="fas fa-weight-hanging"></i> Mass (M)</h4>
+                            <p>Lines of Code + Complexity</p>
+                            <div class="bar-container"><div class="bar-fill" style="width: 60%"></div></div>
+                        </div>
+                        <div class="physics-stat">
+                            <h4><i class="fas fa-meteor"></i> Impact (F)</h4>
+                            <p>F = M x A (PR Merges)</p>
+                            <div class="bar-container"><div class="bar-fill" style="width: 92%"></div></div>
+                        </div>
+                    </div>
+                    <div class="physics-note">
+                        > The leaderboard algorithm calculates your <strong>Contribution Momentum</strong>. Consistent code pushes increase your velocity, while complex PRs add mass to your score.
                     </div>
                 </div>
-                <div class="table-responsive">
-                    <table class="cyber-table">
-                        <thead>
-                            <tr>
-                                <th>RANK</th>
-                                <th>AGENT</th>
-                                <th>CLASS</th>
-                                <th>CONTRIBUTIONS</th>
-                                <th>XP_LEVEL</th>
-                                <th>STATUS</th>
-                            </tr>
-                        </thead>
-                        <tbody id="leaderboard-body">
-                            </tbody>
-                    </table>
+
+                <div class="bento-item stat-tile s1">
+                    <div class="tile-icon"><i class="fas fa-user-astronaut"></i></div>
+                    <div class="tile-info">
+                        <h3>Total Agents</h3>
+                        <h2 id="total-contributors">0</h2>
+                    </div>
                 </div>
-                <div class="pagination-hud" id="pagination">
+                <div class="bento-item stat-tile s2">
+                    <div class="tile-icon"><i class="fas fa-code-branch"></i></div>
+                    <div class="tile-info">
+                        <h3>Merge Requests</h3>
+                        <h2 id="total-prs">0</h2>
                     </div>
-            </div>
-
-            <div class="bento-card activity-panel">
-                <div class="panel-header"><i class="fas fa-satellite-dish"></i> LIVE_FEED</div>
-                <div class="feed-list" id="feed-list">
+                </div>
+                <div class="bento-item stat-tile s3">
+                    <div class="tile-icon"><i class="fas fa-star"></i></div>
+                    <div class="tile-info">
+                        <h3>Star Power</h3>
+                        <h2 id="total-stars">0</h2>
                     </div>
-            </div>
+                </div>
 
+                <div class="bento-item table-panel">
+                    <div class="panel-header">
+                        <span><i class="fas fa-list-ol"></i> TOP_CONTRIBUTORS</span>
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="search-input" placeholder="Search ID...">
+                        </div>
+                    </div>
+                    <div class="table-wrapper">
+                        <table class="hud-table">
+                            <thead>
+                                <tr>
+                                    <th>RANK</th>
+                                    <th>OPERATOR</th>
+                                    <th>LEAGUE</th>
+                                    <th>VELOCITY</th>
+                                    <th>XP</th>
+                                    <th>STATUS</th>
+                                </tr>
+                            </thead>
+                            <tbody id="leaderboard-body">
+                                </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="bento-item graph-panel">
+                    <div class="panel-label">ACTIVITY_WAVEFORM</div>
+                    <div class="chart-bars" id="chart-bars">
+                        </div>
+                </div>
+
+            </div>
         </main>
     </div>
 
     <div id="footer-placeholder"></div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="../js/navbar.js"></script>
     <script src="../js/footer.js"></script>
     <script src="../js/theme.js"></script>
     <script src="../js/back-to-top.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     
     <script src="../js/leaderboard.js"></script>
 

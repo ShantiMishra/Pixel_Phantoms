@@ -1,203 +1,163 @@
-// Configuration
 const REPO_OWNER = 'sayeeg-11';
 const REPO_NAME = 'Pixel_Phantoms';
 const API_BASE = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}`;
 
-// State
-let allContributors = [];
-let eventsLog = [];
-
 document.addEventListener('DOMContentLoaded', () => {
     initDashboard();
+    init3DInteraction();
+    initVisualizers();
 });
 
+/* ================================
+   1. DATA & DASHBOARD LOGIC
+   ================================ */
 async function initDashboard() {
-    // 1. Fetch Real Data
     try {
         const [contributors, repo] = await Promise.all([
-            fetchContributors(),
-            fetchRepoDetails()
+            fetch(`${API_BASE}/contributors?per_page=100`).then(res => res.json()),
+            fetch(API_BASE).then(res => res.json())
         ]);
 
-        // 2. Process Data
-        allContributors = processContributors(contributors);
-        
-        // 3. Update UI
-        updateKPIs(allContributors, repo);
-        renderPodium(allContributors.slice(0, 3));
-        renderTable(allContributors);
-        renderVelocityChart(); // Simulated for visual effect
-        generateActivityFeed(allContributors);
-
-    } catch (e) {
-        console.error("System Failure:", e);
+        if (Array.isArray(contributors)) {
+            updateGlobalStats(contributors, repo);
+            renderLeaderboard(contributors);
+        }
+    } catch (error) {
+        console.warn("Using mock data due to API limit.");
+        loadMockData();
     }
 }
 
-// --- API CALLS ---
-async function fetchContributors() {
-    const res = await fetch(`${API_BASE}/contributors?per_page=100`);
-    if(!res.ok) throw new Error("API Limit");
-    return await res.json();
-}
-
-async function fetchRepoDetails() {
-    const res = await fetch(API_BASE);
-    return await res.json();
-}
-
-// --- DATA PROCESSING ---
-function processContributors(data) {
-    return data.map((user, index) => {
-        // Calculate Pseudo-XP based on contributions (since real line count needs complex auth)
-        const xp = (user.contributions * 100) + Math.floor(Math.random() * 50);
-        
-        // Determine "Class" based on random assignment for visual variety (Real implementation would check file types)
-        const classes = ['DEV', 'DESIGN', 'DOCS', 'ARCHITECT'];
-        const userClass = classes[Math.floor(Math.random() * classes.length)];
-        
-        return {
-            rank: index + 1,
-            login: user.login,
-            avatar: user.avatar_url,
-            contributions: user.contributions,
-            xp: xp,
-            level: Math.floor(xp / 500) + 1,
-            class: userClass,
-            status: xp > 1000 ? 'ELITE' : 'ACTIVE'
-        };
-    });
-}
-
-// --- RENDER FUNCTIONS ---
-
-function updateKPIs(users, repo) {
-    animateCounter('total-agents', users.length);
-    animateCounter('total-merges', users.reduce((acc, u) => acc + u.contributions, 0));
-    animateCounter('global-xp', users.reduce((acc, u) => acc + u.xp, 0));
+function updateGlobalStats(contributors, repo) {
+    animateCount("total-contributors", contributors.length);
+    animateCount("total-stars", repo.stargazers_count);
     
-    // Ping simulation
-    setInterval(() => {
-        document.getElementById('ping-val').innerText = (Math.floor(Math.random() * 30) + 10) + 'ms';
-    }, 2000);
+    // Calculate pseudo-PR count
+    const totalContribs = contributors.reduce((acc, c) => acc + c.contributions, 0);
+    animateCount("total-prs", totalContribs);
 }
 
-function renderPodium(top3) {
-    const container = document.getElementById('podium-container');
-    container.innerHTML = '';
+function renderLeaderboard(data) {
+    const tbody = document.getElementById("leaderboard-body");
+    tbody.innerHTML = "";
 
-    top3.forEach(user => {
-        const card = document.createElement('div');
-        card.className = `podium-card rank-${user.rank}`;
-        card.innerHTML = `
-            <div class="podium-rank">#${user.rank}</div>
-            <img src="${user.avatar}" class="podium-avatar">
-            <div class="podium-info">
-                <h4>${user.login}</h4>
-                <span>${user.xp} XP</span>
-            </div>
-        `;
-        container.appendChild(card);
-    });
-}
+    // Sort by contributions
+    data.sort((a, b) => b.contributions - a.contributions);
 
-function renderTable(users) {
-    const tbody = document.getElementById('leaderboard-body');
-    tbody.innerHTML = '';
-
-    users.forEach(user => {
-        const tr = document.createElement('tr');
+    data.slice(0, 10).forEach((user, index) => {
+        const xp = user.contributions * 125; // Gamified Multiplier
         
-        // Class styling
-        let classBadge = '';
-        if(user.class === 'DEV') classBadge = '<span class="class-tag class-dev">DEV</span>';
-        else if(user.class === 'DESIGN') classBadge = '<span class="class-tag class-des">UI/UX</span>';
-        else classBadge = '<span class="class-tag class-doc">DOCS</span>';
+        // Physics Logic: Calculate "Velocity" based on rank
+        const velocity = Math.max(100 - (index * 5), 10) + "%";
+        
+        let league = "ROOKIE";
+        let colorClass = "";
+        
+        if(xp > 5000) { league = "GOLD"; colorClass = "color: #ffd700"; }
+        else if(xp > 2000) { league = "SILVER"; colorClass = "color: #c0c0c0"; }
+        else { league = "BRONZE"; colorClass = "color: #cd7f32"; }
 
-        tr.innerHTML = `
-            <td>#${user.rank}</td>
-            <td style="display:flex; align-items:center; gap:10px;">
-                <img src="${user.avatar}" style="width:25px; height:25px; border-radius:50%">
-                ${user.login}
-            </td>
-            <td>${classBadge}</td>
-            <td>${user.contributions}</td>
-            <td style="color:var(--neon-blue)">LVL ${user.level}</td>
-            <td>${user.status}</td>
+        const row = `
+            <tr>
+                <td style="color:var(--text-dim)">#${String(index+1).padStart(2,'0')}</td>
+                <td style="display:flex; align-items:center; gap:10px; font-weight:bold;">
+                    <img src="${user.avatar_url}" style="width:24px; height:24px; border-radius:50%; border:1px solid var(--neon-cyan)">
+                    ${user.login}
+                </td>
+                <td style="${colorClass}; font-weight:800; letter-spacing:1px;">${league}</td>
+                <td>
+                    <div style="width:100px; height:4px; background:rgba(255,255,255,0.1); border-radius:2px;">
+                        <div style="width:${velocity}; height:100%; background:var(--neon-green); box-shadow:0 0 5px var(--neon-green);"></div>
+                    </div>
+                </td>
+                <td style="font-family:var(--font-mono); color:var(--neon-cyan)">${xp.toLocaleString()} XP</td>
+                <td><span style="font-size:0.7rem; border:1px solid var(--neon-green); color:var(--neon-green); padding:2px 6px; border-radius:4px;">ONLINE</span></td>
+            </tr>
         `;
-        tbody.appendChild(tr);
-    });
-
-    // Search Filter
-    document.getElementById('search-agent').addEventListener('input', (e) => {
-        const term = e.target.value.toLowerCase();
-        Array.from(tbody.children).forEach(row => {
-            const text = row.innerText.toLowerCase();
-            row.style.display = text.includes(term) ? '' : 'none';
-        });
+        tbody.innerHTML += row;
     });
 }
 
-// VISUALIZATION: Random Bar Chart
-function renderVelocityChart() {
-    const container = document.getElementById('velocity-chart');
-    const barCount = 30;
-    
-    for(let i=0; i<barCount; i++) {
+/* ================================
+   2. 3D INTERACTION LOGIC
+   ================================ */
+function init3DInteraction() {
+    const container = document.querySelector('.stage-3d-panel');
+    const cube = document.getElementById('cube');
+
+    if (!container || !cube) return;
+
+    container.addEventListener('mousemove', (e) => {
+        const rect = container.getBoundingClientRect();
+        const x = e.clientX - rect.left; // Mouse X within element
+        const y = e.clientY - rect.top;  // Mouse Y within element
+        
+        // Calculate rotation based on center of panel
+        // Center is 0,0. Left/Top is negative, Right/Bottom is positive.
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+        
+        const rotateY = ((x - centerX) / centerX) * 45; // Max 45deg rotation
+        const rotateX = -((y - centerY) / centerY) * 45; // Invert Y axis for natural feel
+
+        // Apply transform
+        cube.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+    });
+
+    // Reset on leave
+    container.addEventListener('mouseleave', () => {
+        cube.style.transform = `rotateX(-20deg) rotateY(-30deg)`; // Back to default
+    });
+}
+
+/* ================================
+   3. VISUALIZERS & UTILS
+   ================================ */
+function initVisualizers() {
+    const barContainer = document.getElementById('chart-bars');
+    const barCount = 15;
+
+    for (let i = 0; i < barCount; i++) {
         const bar = document.createElement('div');
-        bar.className = 'bar';
-        // Random height for "activity" look
-        const h = Math.floor(Math.random() * 80) + 20;
+        bar.className = 'mini-bar';
+        // Random height for visual effect
+        const h = Math.floor(Math.random() * 80) + 20; 
         bar.style.height = `${h}%`;
-        bar.style.opacity = (i / barCount) + 0.3;
-        container.appendChild(bar);
+        // Stagger animation
+        bar.style.animation = `pulse-bar 1s infinite alternate ${i * 0.1}s`;
+        barContainer.appendChild(bar);
     }
 }
 
-// SIMULATION: Activity Feed
-function generateActivityFeed(users) {
-    const list = document.getElementById('feed-list');
-    const actions = ['pushed code', 'merged PR', 'opened issue', 'deployed build', 'refactored core'];
-    
-    // Generate initial fake history
-    for(let i=0; i<10; i++) {
-        addFeedItem(list, users, actions);
-    }
-
-    // Add live updates
-    setInterval(() => {
-        addFeedItem(list, users, actions);
-    }, 3000);
-}
-
-function addFeedItem(list, users, actions) {
-    const randomUser = users[Math.floor(Math.random() * users.length)];
-    const randomAction = actions[Math.floor(Math.random() * actions.length)];
-    const time = new Date().toLocaleTimeString();
-    
-    const item = document.createElement('div');
-    item.className = 'feed-item';
-    item.innerHTML = `
-        <span class="feed-time">[${time}]</span>
-        <span class="feed-user">${randomUser.login}</span>
-        ${randomAction} in <span style="color:#fff">main</span>
-    `;
-    
-    list.prepend(item);
-    if(list.children.length > 15) list.lastChild.remove();
-}
-
-// UTILS
-function animateCounter(id, target) {
+function animateCount(id, target) {
     const el = document.getElementById(id);
-    let current = 0;
-    const inc = Math.ceil(target / 50);
+    if (!el) return;
+    
+    let start = 0;
+    const duration = 2000;
+    const stepTime = Math.abs(Math.floor(duration / target));
+    
+    // Safety for large numbers
+    const safeStep = stepTime < 10 ? 10 : stepTime; 
+    const increment = target > 100 ? Math.ceil(target / 50) : 1;
+
     const timer = setInterval(() => {
-        current += inc;
-        if(current >= target) {
-            current = target;
+        start += increment;
+        if (start >= target) {
+            start = target;
             clearInterval(timer);
         }
-        el.innerText = current.toLocaleString();
-    }, 20);
+        el.innerText = start.toLocaleString();
+    }, safeStep);
+}
+
+function loadMockData() {
+    const mock = [
+        { login: "Neo_The_One", avatar_url: "https://api.dicebear.com/7.x/bottts/svg?seed=neo", contributions: 150 },
+        { login: "Trinity_Core", avatar_url: "https://api.dicebear.com/7.x/bottts/svg?seed=tri", contributions: 120 },
+        { login: "Morpheus_Dev", avatar_url: "https://api.dicebear.com/7.x/bottts/svg?seed=mor", contributions: 95 },
+        { login: "Cipher_Ops", avatar_url: "https://api.dicebear.com/7.x/bottts/svg?seed=cip", contributions: 80 }
+    ];
+    updateGlobalStats(mock, { stargazers_count: 1024 });
+    renderLeaderboard(mock);
 }
