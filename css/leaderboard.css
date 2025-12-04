@@ -635,120 +635,135 @@ body.hud-mode {
 }
 
 /* --- 3. PROJECTS VIEW (Hex Grid) --- */
-.hex-grid-wrapper {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 50px;
-    padding: 50px;
-    height: 600px;
-}
+/* --- New Project View Styling for enhanced content --- */
 
-.hex-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 100px);
-    grid-gap: 10px;
-}
-
-.hex-item {
-    width: 100px; height: 110px;
-    background: rgba(0, 243, 255, 0.1);
-    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: 0.3s;
-    border: 1px solid var(--neon-cyan); /* Fallback border */
-}
-
-.hex-item:hover {
-    background: var(--neon-cyan);
-    color: #000;
-    transform: scale(1.1);
-    box-shadow: 0 0 20px var(--neon-cyan);
-}
-
-.hex-item i { font-size: 1.5rem; margin-bottom: 5px; }
-.hex-item span { font-size: 0.7rem; font-weight: bold; }
-
-.project-display {
-    width: 300px;
-    padding: 30px;
-    background: var(--panel-bg);
-    border: 1px solid var(--neon-purple);
-    border-radius: 12px;
-}
-
-/* Styling for the new section content */
-.enhanced-modules {
+/* Wrapper for the new content to fix potential gapping in the main HUD section */
+.module-sections {
     padding: 20px;
-    background-color: var(--hud-background-dark); /* Use your existing dark background variable */
-    border-radius: 8px;
     margin-top: 20px;
 }
 
-.enhanced-modules .section-title {
-    color: var(--color-primary); /* Use a highlighted color */
+.section-title-module {
+    color: var(--color-accent, #00b0ff); /* Assuming an accent color variable exists */
+    font-size: 1.5em;
     margin-bottom: 25px;
-    border-bottom: 2px solid var(--color-accent);
     padding-bottom: 10px;
+    border-bottom: 2px solid var(--color-border, #333);
 }
 
-/* Discipline Tracks Layout */
-.track-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 20px;
-    margin-bottom: 30px;
-}
-
-.discipline-track {
-    background-color: var(--hud-background-light); /* A slightly lighter shade for contrast */
-    padding: 15px;
-    border-radius: 6px;
-    border-left: 5px solid var(--color-accent);
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-.discipline-track h3 {
-    margin-top: 0;
-    color: var(--color-text-light); /* Or another highlight color */
-    font-size: 1.1em;
-}
-
-.discipline-track p {
-    margin: 5px 0;
-    font-size: 0.95em;
-    color: var(--color-text-secondary);
-}
-
-.discipline-track.new-track {
-    border-left-color: #28a745; /* A different color for the suggested track */
-}
-
-/* Rulebook and R&D Archives Lists */
-.rulebook-list, .archive-integration {
-    list-style-type: none; /* Remove default bullets */
-    padding-left: 0;
-    margin-bottom: 30px;
-}
-
-.rulebook-list li, .archive-integration li {
-    background-color: var(--hud-background-light);
-    margin-bottom: 10px;
-    padding: 10px 15px;
-    border-radius: 4px;
-    border-left: 3px solid var(--color-tertiary); /* Use another accent color */
-}
-
-/* Separator */
-.enhanced-modules hr {
-    border: 0;
+.section-divider {
+    border: none;
     height: 1px;
-    background-image: linear-gradient(to right, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0));
-    margin: 30px 0;
+    background-color: var(--color-border, #444);
+    margin: 40px 0;
+}
+
+/* --- Discipline Track Card Styling (Inspired by About.html Cards) --- */
+
+.discipline-track-container {
+    display: grid;
+    /* Responsive grid: Min width of 300px for each card, flexible columns */
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.track-card {
+    /* Use variables common for card backgrounds */
+    background-color: var(--card-background-dark, #1c1c1c); 
+    color: var(--color-text, #f0f0f0);
+    padding: 20px;
+    border-radius: 8px;
+    text-decoration: none; /* Remove underline for anchor tag */
+    display: block; /* Make the anchor fill the card area */
+    border: 1px solid var(--color-border-light, #333);
+    transition: all 0.3s ease;
+}
+
+.track-card:hover {
+    /* Hover effect similar to committee members */
+    background-color: var(--card-background-hover, #282828);
+    border-color: var(--color-primary, #007bff); /* Highlight border on hover */
+    transform: translateY(-5px); /* Subtle lift */
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.4);
+}
+
+.track-card h4 {
+    margin-top: 0;
+    font-size: 1.2em;
+    color: var(--color-primary, #007bff);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+}
+
+.track-card p {
+    font-size: 0.9em;
+    margin: 5px 0;
+}
+
+.complexity-level {
+    font-weight: bold;
+    padding: 4px 8px;
+    border-radius: 4px;
+    display: inline-block;
+    margin-top: 10px;
+}
+
+/* Color coding for complexity */
+.level-high {
+    color: #ff4d4d; /* Red/Alert color */
+    background-color: rgba(255, 77, 77, 0.1);
+}
+
+.level-medium-high {
+    color: #ffc107; /* Yellow/Warning color */
+    background-color: rgba(255, 193, 7, 0.1);
+}
+
+.new-track {
+    border-color: #28a745; /* Green for new suggestion */
+}
+
+/* --- Info Card Styling (for Rulebook and R&D Archives) --- */
+
+.info-card-container {
+    display: grid;
+    grid-template-columns: 1fr; /* Full width for the whole section */
+}
+
+.info-card {
+    background-color: var(--card-background-light, #212121);
+    padding: 25px;
+    border-radius: 8px;
+    border-left: 5px solid var(--color-secondary, #6c757d); /* Use a distinguished border color */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.info-card h4 {
+    color: var(--color-accent, #00b0ff);
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 1.3em;
+}
+
+.info-card ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.info-card li {
+    margin-bottom: 15px;
+    padding-left: 20px;
+    position: relative;
+    font-size: 0.95em;
+}
+
+.info-card li::before {
+    content: '→'; /* Custom bullet point/icon */
+    position: absolute;
+    left: 0;
+    color: var(--color-primary, #007bff);
+    font-weight: bold;
 }
 
 /* --- 4. ACHIEVEMENTS VIEW --- */
