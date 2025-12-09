@@ -181,5 +181,111 @@
         ]
       }
     ]
+  },
+  "app": {
+    "title": "Mobile_Dev_Protocol_v1.0",
+    "description": "Initialize sequence: Cross-Platform Deployment. React Native focus.",
+    "phases": [
+      {
+        "id": "phase_1",
+        "title": "PHASE_01: The_Bridge",
+        "status": "unlocked",
+        "modules": [
+          {
+            "title": "React Native Basics",
+            "desc": "JSX to Native Views. View, Text, and Stylesheet API.",
+            "link": "https://reactnative.dev/docs/getting-started",
+            "icon": "fa-brands fa-react"
+          },
+          {
+            "title": "Expo Framework",
+            "desc": "Rapid development workflow. Go from code to phone instantly.",
+            "link": "https://docs.expo.dev/",
+            "icon": "fa-solid fa-bolt"
+          },
+          {
+            "title": "Flexbox Layouts",
+            "desc": "Mastering mobile responsiveness and touch handling.",
+            "link": "https://reactnative.dev/docs/flexbox",
+            "icon": "fa-solid fa-layer-group"
+          }
+        ]
+      },
+      {
+        "id": "phase_2",
+        "title": "PHASE_02: Navigation_Matrix",
+        "status": "locked",
+        "modules": [
+          {
+            "title": "React Navigation",
+            "desc": "Stack, Tab, and Drawer navigators for seamless flow.",
+            "link": "https://reactnavigation.org/docs/getting-started",
+            "icon": "fa-solid fa-compass"
+          },
+          {
+            "title": "Passing Params",
+            "desc": "Data flow between screens and deep linking.",
+            "link": "https://reactnavigation.org/docs/params",
+            "icon": "fa-solid fa-route"
+          },
+          {
+            "title": "Safe Area Context",
+            "desc": "Handling notches and device-specific insets.",
+            "link": "https://docs.expo.dev/versions/latest/sdk/safe-area-context/",
+            "icon": "fa-solid fa-mobile-screen"
+          }
+        ]
+      },
+      {
+        "id": "phase_3",
+        "title": "PHASE_03: State_&_Storage",
+        "status": "locked",
+        "modules": [
+          {
+            "title": "API Integration",
+            "desc": "Axios & Fetch. Consuming REST/GraphQL endpoints.",
+            "link": "https://reactnative.dev/docs/network",
+            "icon": "fa-solid fa-cloud-arrow-down"
+          },
+          {
+            "title": "Global State",
+            "desc": "Zustand or Redux Toolkit for app-wide data management.",
+            "link": "https://github.com/pmndrs/zustand",
+            "icon": "fa-solid fa-database"
+          },
+          {
+            "title": "Async Storage",
+            "desc": "Persisting data locally on the device.",
+            "link": "https://react-native-async-storage.github.io/async-storage/",
+            "icon": "fa-solid fa-box-archive"
+          }
+        ]
+      },
+      {
+        "id": "phase_4",
+        "title": "PHASE_04: Deployment_Protocol",
+        "status": "locked",
+        "modules": [
+          {
+            "title": "App Icons & Splash",
+            "desc": "Configuring assets for iOS and Android.",
+            "link": "https://docs.expo.dev/guides/app-icons/",
+            "icon": "fa-solid fa-icons"
+          },
+          {
+            "title": "EAS Build",
+            "desc": "Building binary .apk and .ipa files via Expo Application Services.",
+            "link": "https://docs.expo.dev/build/introduction/",
+            "icon": "fa-solid fa-hammer"
+          },
+          {
+            "title": "Store Submission",
+            "desc": "Google Play Console & Apple App Store Connect guidelines.",
+            "link": "https://reactnative.dev/docs/publishing-to-google-play-store",
+            "icon": "fa-brands fa-google-play"
+          }
+        ]
+      }
+    ]
   }
 }
