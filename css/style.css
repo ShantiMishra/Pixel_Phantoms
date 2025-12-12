@@ -13,7 +13,7 @@
   --input-bg: #ffffff;
   --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   --nav-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
-  
+
   /* Footer Light Theme Variables */
   --footer-bg: #1a1a2e;
   --footer-bg-secondary: #16213e;
@@ -34,6 +34,25 @@
   --input-placeholder: #718096;
   --accent-primary: #667eea;
   --accent-secondary: #764ba2;
+
+  /* Shared UI Tokens for Consistency */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 20px;
+  --spacing-xl: 30px;
+  --spacing-xxl: 40px;
+
+  --shadow-hover: 0 8px 25px rgba(0, 170, 255, 0.2);
+  --shadow-hover-strong: 0 12px 30px rgba(0, 170, 255, 0.3);
+
+  --hover-transform: translateY(-5px);
+  --hover-transform-strong: translateY(-8px) scale(1.02);
+
+  --border-radius-sm: 8px;
+  --border-radius-md: 12px;
+  --border-radius-lg: 16px;
+  --border-radius-xl: 20px;
 }
 
 [data-theme="dark"] {
@@ -85,6 +104,25 @@
   --text-dim: #bbbbbb;
   --font-hud: 'JetBrains Mono', monospace;
   --font-mono: 'JetBrains Mono', monospace;
+
+  /* Shared UI Tokens for Consistency */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 20px;
+  --spacing-xl: 30px;
+  --spacing-xxl: 40px;
+
+  --shadow-hover: 0 8px 25px rgba(0, 170, 255, 0.2);
+  --shadow-hover-strong: 0 12px 30px rgba(0, 170, 255, 0.3);
+
+  --hover-transform: translateY(-5px);
+  --hover-transform-strong: translateY(-8px) scale(1.02);
+
+  --border-radius-sm: 8px;
+  --border-radius-md: 12px;
+  --border-radius-lg: 16px;
+  --border-radius-xl: 20px;
 }
 
 /* GENERAL */
