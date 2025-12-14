@@ -1,25 +1,16 @@
 [
   {
-    "id": "codestorm-2025",
     "title": "CodeStorm 2025",
+    "description": "A 24-hour hackathon where innovators build real-world tech solutions.",
     "date": "April 10–11, 2025",
     "location": "Innovation Lab",
-    "banner": "assets/events/codestorm.jpg",
-    "status": "upcoming",
-    "shortDescription": "A 24-hour competitive coding hackathon.",
-    "fullDescription": "CodeStorm 2025 is a 24-hour hackathon where students solve real-world problems using technology.",
-    "registrationLink": "#"
+    "status": "REGISTRATION OPEN"
   },
   {
-    "id": "ai-workshop",
-    "title": "AI & ML Workshop",
+    "title": "AI & ML Bootcamp",
+    "description": "Hands-on bootcamp covering AI and Machine Learning basics.",
     "date": "May 5, 2025",
     "location": "Seminar Hall",
-    "banner": "assets/events/ai.jpg",
-    "status": "upcoming",
-    "shortDescription": "Hands-on workshop on AI and ML basics.",
-    "fullDescription": "This workshop introduces AI and Machine Learning concepts with practical examples.",
-    "registrationLink": "#"
+    "status": "UPCOMING"
   }
-
 ]
