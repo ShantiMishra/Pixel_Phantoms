@@ -1,11 +1,10 @@
-/* protocol.css */
 body {
     margin: 0;
     overflow-x: hidden;
-    background: #05070a; /* Fallback for canvas */
+    background: #05070a;
     display: flex;
     justify-content: center;
-    align-items: flex-start; /* Positioning from top */
+    align-items: flex-start; /* Action Plan 3: Positioning from top */
     min-height: 100vh;
 }
 
@@ -14,27 +13,19 @@ body {
     top: 0;
     left: 0;
     z-index: -1;
+    pointer-events: none;
 }
 
 .protocol-wrapper {
     width: 90%;
     max-width: 1200px;
-    padding: 100px 0; /* Action Plan Item 3: Center from top height */
+    padding: 100px 0; /* Action Plan 3: Center from height */
     text-align: center;
 }
 
-.glitch-title {
-    font-size: 3.5rem;
-    font-family: 'Rajdhani', sans-serif;
-    color: #fff;
-    margin-bottom: 50px;
-    text-shadow: 0 0 20px rgba(0, 170, 255, 0.5);
-}
-
-/* Action Plan Item 4: Content Boxes */
 .bento-container {
     display: flex;
-    gap: 40px; /* Action Plan Item 4: Separate equal distance */
+    gap: 40px; /* Action Plan 4: Separate equal distance */
     justify-content: center;
     margin-bottom: 60px;
     flex-wrap: wrap;
@@ -52,31 +43,24 @@ body {
     backdrop-filter: blur(10px);
 }
 
-/* Hover: Glowing behind and "Bones" structural effect */
+/* Action Plan 4: Hover with Glowing Behind and Bones feature */
 .protocol-box:hover {
     transform: translateY(-10px) scale(1.02);
     box-shadow: 0 0 50px rgba(0, 170, 255, 0.2); /* Glow behind */
     border: 2px solid var(--accent-color, #00aaff); /* Structural Bone effect */
 }
 
-.neon-glow-blue { --accent-color: #00aaff; }
-.neon-glow-purple { --accent-color: #bc13fe; }
-
-/* Action Plan Item 5: Glowing Rules below content */
+/* Action Plan 5: Glowing Rules separate from content */
 .glowing-rule {
     background: rgba(255, 255, 255, 0.03);
     border-left: 4px solid #00aaff;
     margin: 15px 0;
     padding: 20px;
-    display: flex;
-    align-items: center;
-    gap: 20px;
     border-radius: 5px;
     box-shadow: inset 0 0 10px rgba(0, 170, 255, 0.1);
     transition: 0.3s;
 }
 
 .glowing-rule:hover {
-    box-shadow: 0 0 20px rgba(0, 170, 255, 0.3);
-    background: rgba(0, 170, 255, 0.05);
+    box-shadow: 0 0 20px rgba(0, 170, 255, 0.3); /* Action Plan 5: Glowing effect */
 }
