@@ -1,8 +1,18 @@
 document.addEventListener("DOMContentLoaded", () => {
   const container = document.getElementById("events-container");
 
+  if (!container) {
+    console.error("Events container not found");
+    return;
+  }
+
   fetch("data/events.json")
-    .then(response => response.json())
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json();
+    })
     .then(events => {
 
   if (!events || events.length === 0) {
@@ -51,12 +61,7 @@ if (upcomingEvents.length > 0) {
   <div class="event-register">
     ${
       hasValidRegistration
-        ? `<a href="${event.registrationLink}" 
-              target="_blank" 
-              rel="noopener noreferrer" 
-              class="btn-register">
-              Register
-           </a>`
+        ? `<button class="btn-register btn-open-register" data-event-title="${(event.title||'Event').replace(/"/g,'&quot;')}">Register</button>`
         : `<button class="btn-register disabled" disabled>
               Registration Closed
            </button>`
@@ -70,7 +75,62 @@ if (upcomingEvents.length > 0) {
     })
     .catch(error => {
       console.error("Error loading events:", error);
-      container.innerHTML = "<p>Failed to load events.</p>";
+      const errorMessage = error.message.includes('HTTP') ? 'Failed to load events. Please check your connection.' : 'No events data available.';
+      if (container) {
+        container.innerHTML = `<div class="no-events"><h3>Error</h3><p>${errorMessage}</p></div>`;
+      }
     });
+
+  // --- Registration modal behavior ---
+  (function(){
+    const modal = document.getElementById('register-modal');
+    const modalTitle = document.getElementById('register-event-title');
+    const registerForm = document.getElementById('register-form');
+    const closeBtn = modal && modal.querySelector('.modal-close');
+    const cancelBtn = modal && modal.querySelector('.modal-cancel');
+
+    function openRegisterModal(title){
+      if(!modal) return;
+      modalTitle.textContent = title || 'Event';
+      modal.classList.add('show');
+      modal.setAttribute('aria-hidden','false');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeRegisterModal(){
+      if(!modal) return;
+      modal.classList.remove('show');
+      modal.setAttribute('aria-hidden','true');
+      document.body.style.overflow = '';
+    }
+
+    document.addEventListener('click', (e) => {
+      const btn = e.target.closest && e.target.closest('.btn-open-register');
+      if(btn){
+        e.preventDefault();
+        openRegisterModal(btn.dataset.eventTitle || 'Event');
+      }
+    });
+
+    if(closeBtn) closeBtn.addEventListener('click', closeRegisterModal);
+    if(cancelBtn) cancelBtn.addEventListener('click', closeRegisterModal);
+
+    if(modal){
+      modal.addEventListener('click', (e) => {
+        if(e.target === modal) closeRegisterModal();
+      });
+    }
+
+    if(registerForm){
+      registerForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        // Basic client-side validation already done via required attributes
+        // TODO: send data to server if needed
+        alert('Registered');
+        registerForm.reset();
+        closeRegisterModal();
+      });
+    }
+  })();
    
 });
